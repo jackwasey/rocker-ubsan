@@ -5,33 +5,28 @@ MAINTAINER "Carl Boettiger and Dirk Eddelbuettel" rocker-maintainers@eddelbuette
 
 # RUN echo "deb http://ftp.debian.org/debian experimental main" > /etc/apt/sources.list.d/debian-experimental.list
 
-## Remain current
 RUN apt-get update -qq \
-	&& apt-get dist-upgrade -y
-
-# can't use debian clang because their build doesn't work with sanitizers
-# but can use clang to build clang
-RUN apt-get update -qq \
+	&& apt-get dist-upgrade -y \
 	&& apt-get install -t unstable -y \
-	clang-3.7 \
-      	libxml2-dev \
-	libssl-dev \
-	littler \
-	libcurl4-openssl-dev \
-	texlive-base \
-	fonts-inconsolata \
-	git \
-	libssh2-1-dev \
-	qpdf \
-	pandoc \
-    	pandoc-citeproc \
-	cmake automake
+		automake \
+	        clang-3.7 \
+	        cmake \
+	        fonts-inconsolata \
+	        git \
+	        libcurl4-openssl-dev \
+	        libssh2-1-dev \
+	        libssl-dev \
+	        libxml2-dev \
+	        pandoc \
+	        pandoc-citeproc \
+	        qpdf \
+	        texlive-base 
 
 ## Check out R-devel
 RUN cd /tmp \
 	&& svn co http://svn.r-project.org/R/trunk R-devel 
 
-# perhaps prefer a branch here, not always head. Original is actually SVN.
+# perhaps prefer a branch here, not always head.
 RUN cd /tmp
 RUN svn co https://llvm.org/svn/llvm-project/llvm/trunk llvm
 RUN svn co https://llvm.org/svn/llvm-project/cfe/trunk clang
@@ -48,36 +43,28 @@ RUN mv libcxx llvm/projects
 RUN mv libcxxabi llvm/projects
 RUN mv openmp llvm/projects
 
-# RUN apt-get install -t unstable -y libclang-3.7-dev
-
-RUN mkdir llvm-build
-RUN cd llvm-build && \
+RUN mkdir llvm-build \
+  && cd llvm-build && \
   cmake \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -DLLVM_TARGETS_TO_BUILD:STRING=host \
   -DCMAKE_INSTALL_PREFIX=/usr/local \
   -DCLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
-  ../llvm
+  ../llvm 
+RUN make -j5 -C llvm-build \
+  && make -C llvm-build install \
+  && rm -rf llvm-build \
+  && ldconfig
 
 # TODO: consider using clang to build clang
 #  -DCMAKE_C_COMPILER=clang-3.7 \
 #  -DCMAKE_CXX_COMPILER=clang-3.7 \
 
-# don't use SupC++, we're going to use c++abi from LLVM project.
-#  -DLIBCXX_CXX_ABI=libsupc++ \
-#  -DLIBCXX_LIBSUPCXX_INCLUDE_PATHS="/usr/include/c++/5/;/usr/include/c++/5/x86_64-linux-gnu/" \
-#  -DLLVM_TARGETS_TO_BUILD:STRING=X86 \
-RUN make -j5 -C llvm-build && make -C llvm-build install 
-
-# eventually clean, but for testing, leave the build tree for diagnosis.
-# RUN rm -rf llvm-build
-
-RUN ldconfig
-
 # use config.site to set the R build environment
 COPY config.site /tmp/R-devel/config.site
 RUN cd /tmp/R-devel \
 	&& ./configure \
+               --enable-R-shlib \
 	       --without-blas \
 	       --without-lapack \
 	       --with-readline \
