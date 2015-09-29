@@ -63,7 +63,9 @@ RUN cd llvm-build && \
 #  -DLIBCXX_CXX_ABI=libsupc++ \
 #  -DLIBCXX_LIBSUPCXX_INCLUDE_PATHS="/usr/include/c++/5/;/usr/include/c++/5/x86_64-linux-gnu/" \
 #  -DLLVM_TARGETS_TO_BUILD:STRING=X86 \
-RUN make -j5 -C llvm-build && make -C llvm-build install && rm -rf llvm-build
+
+# don't use make -j as it may be unfriendly to hosted docker builds.
+RUN make -C llvm-build && make -C llvm-build install && rm -rf llvm-build
 
 # eventually clean, but for testing, leave the build tree for diagnosis.
 # RUN rm -rf llvm-build
@@ -80,7 +82,7 @@ RUN cd /tmp/R-devel \
 	       --with-readline \
 	       --without-recommended-packages \
 	       --program-suffix=devsan \
-     	&& make -j5 \
+     	&& make \
 	&& make install \
 	&& make clean
 

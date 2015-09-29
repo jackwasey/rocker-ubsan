@@ -51,7 +51,9 @@ RUN mkdir llvm-build \
   -DCMAKE_INSTALL_PREFIX=/usr/local \
   -DCLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
   ../llvm 
-RUN make -j5 -C llvm-build \
+
+# don't use make -j as it may be unfriendly to hosted docker builds.
+RUN make -C llvm-build \
   && make -C llvm-build install \
   && rm -rf llvm-build \
   && ldconfig
@@ -70,7 +72,7 @@ RUN cd /tmp/R-devel \
 	       --with-readline \
 	       --without-recommended-packages \
 	       --program-suffix=devsan \
-     	&& make -j5 \
+     	&& make \
 	&& make install \
 	&& make clean
 
