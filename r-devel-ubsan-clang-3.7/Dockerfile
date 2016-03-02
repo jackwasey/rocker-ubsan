@@ -29,7 +29,16 @@ RUN apt-get update -qq \
 RUN cd /tmp \
 	&& svn co http://svn.r-project.org/R/trunk R-devel 
 
-# perhaps prefer a branch here, not always head. Original is actually SVN.
+# SVN R-devel doesn't always compile. An alternative is to grab the devel tar:
+# https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
+#
+# the following is a beta version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
+RUN apt-get install curl
+RUN rm -rf /tmp/R-devel \
+      && cd /tmp \
+      && curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz \
+      # move beta to devel so i can switch back to svn easily
+      && mv /tmp/R-beta /tmp/R-devel
 
 ENV LLVM_REL=RELEASE_371/final
 
