@@ -30,14 +30,17 @@ RUN cd /tmp \
 	&& svn co http://svn.r-project.org/R/trunk R-devel 
 
 # perhaps prefer a branch here, not always head. Original is actually SVN.
+
+ENV LLVM_REL=RELEASE_371/final
+
 RUN cd /tmp
-RUN svn co https://llvm.org/svn/llvm-project/llvm/tags/RELEASE_370/final llvm
-RUN svn co https://llvm.org/svn/llvm-project/cfe/tags/RELEASE_370/final clang
-RUN svn co https://llvm.org/svn/llvm-project/clang-tools-extra/tags/RELEASE_370/final clang-tools-extra
-RUN svn co https://llvm.org/svn/llvm-project/compiler-rt/tags/RELEASE_370/final compiler-rt
-RUN svn co https://llvm.org/svn/llvm-project/libcxx/tags/RELEASE_370/final libcxx
-RUN svn co https://llvm.org/svn/llvm-project/libcxxabi/tags/RELEASE_370/final libcxxabi
-RUN svn co http://llvm.org/svn/llvm-project/openmp/tags/RELEASE_370/final openmp
+RUN svn co https://llvm.org/svn/llvm-project/llvm/tags/$LLVM_REL llvm
+RUN svn co https://llvm.org/svn/llvm-project/cfe/tags/$LLVM_REL clang
+RUN svn co https://llvm.org/svn/llvm-project/clang-tools-extra/tags/$LLVM_REL clang-tools-extra
+RUN svn co https://llvm.org/svn/llvm-project/compiler-rt/tags/$LLVM_REL compiler-rt
+RUN svn co https://llvm.org/svn/llvm-project/libcxx/tags/$LLVM_REL libcxx
+RUN svn co https://llvm.org/svn/llvm-project/libcxxabi/tags/$LLVM_REL libcxxabi
+RUN svn co http://llvm.org/svn/llvm-project/openmp/tags/$LLVM_REL openmp
 
 RUN mv clang llvm/tools
 RUN mv compiler-rt llvm/projects

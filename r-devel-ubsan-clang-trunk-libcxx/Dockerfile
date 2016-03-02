@@ -26,16 +26,16 @@ RUN apt-get update -qq \
 RUN cd /tmp \
 	&& svn co http://svn.r-project.org/R/trunk R-devel 
 
-ENV LLVM_REL=RELEASE_380/rc2
-
+# perhaps prefer a 3.8 branch here, not always trunk.
+# it will be llvm-project/*/tags/RELEASE_380/final or rc2 instead of final
 RUN cd /tmp
-RUN svn co https://llvm.org/svn/llvm-project/llvm/tags/$LLVM_REL llvm
-RUN svn co https://llvm.org/svn/llvm-project/cfe/tags/$LLVM_REL clang
-RUN svn co https://llvm.org/svn/llvm-project/clang-tools-extra/tags/$LLVM_REL clang-tools-extra
-RUN svn co https://llvm.org/svn/llvm-project/compiler-rt/tags/$LLVM_REL compiler-rt
-RUN svn co https://llvm.org/svn/llvm-project/libcxx/tags/$LLVM_REL libcxx
-RUN svn co https://llvm.org/svn/llvm-project/libcxxabi/tags/$LLVM_REL libcxxabi
-RUN svn co http://llvm.org/svn/llvm-project/openmp/tags/$LLVM_REL openmp
+RUN svn co https://llvm.org/svn/llvm-project/llvm/trunk llvm
+RUN svn co https://llvm.org/svn/llvm-project/cfe/trunk clang
+RUN svn co https://llvm.org/svn/llvm-project/clang-tools-extra/trunk clang-tools-extra
+RUN svn co https://llvm.org/svn/llvm-project/compiler-rt/trunk compiler-rt
+RUN svn co https://llvm.org/svn/llvm-project/libcxx/trunk libcxx
+RUN svn co https://llvm.org/svn/llvm-project/libcxxabi/trunk libcxxabi
+RUN svn co http://llvm.org/svn/llvm-project/openmp/trunk openmp
 
 RUN mv clang llvm/tools
 RUN mv compiler-rt llvm/projects
