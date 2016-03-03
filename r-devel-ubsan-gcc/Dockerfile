@@ -3,7 +3,8 @@
 FROM rocker/r-devel:latest
 
 # use unstable to get the right development library versions
-RUN apt-get update -y && apt-get dist-upgrade -y && apt-get install -y -t unstable \
+RUN apt-get install -y -t unstable \
+  curl \
   fonts-inconsolata \
   git \
   libcurl4-openssl-dev \
@@ -23,7 +24,6 @@ RUN apt-get update -y && apt-get dist-upgrade -y && apt-get install -y -t unstab
 # https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
 #
 # the following is a beta version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
-RUN apt-get install curl
 RUN rm -rf /tmp/R-devel \
       && cd /tmp \
       && curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz \

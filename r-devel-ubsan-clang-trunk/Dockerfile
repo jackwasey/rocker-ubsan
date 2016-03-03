@@ -5,12 +5,11 @@ MAINTAINER "Carl Boettiger and Dirk Eddelbuettel" rocker-maintainers@eddelbuette
 
 # RUN echo "deb http://ftp.debian.org/debian experimental main" > /etc/apt/sources.list.d/debian-experimental.list
 
-RUN apt-get update -qq \
-	&& apt-get dist-upgrade -y \
-	&& apt-get install -t unstable -y \
+RUN apt-get install -t unstable -y \
 		automake \
 	        clang-3.7 \
 	        cmake \
+                curl \
 	        fonts-inconsolata \
 	        git \
 	        libcurl4-openssl-dev \
@@ -23,14 +22,13 @@ RUN apt-get update -qq \
 	        texlive-base 
 
 ## Check out R-devel
-RUN cd /tmp \
-	&& svn co http://svn.r-project.org/R/trunk R-devel 
+# RUN cd /tmp \
+#	&& svn co http://svn.r-project.org/R/trunk R-devel 
 
 # SVN R-devel doesn't always compile. An alternative is to grab the devel tar:
 # https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
 #
 # the following is a beta version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
-RUN apt-get install curl
 RUN rm -rf /tmp/R-devel \
       && cd /tmp \
       && curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz \
