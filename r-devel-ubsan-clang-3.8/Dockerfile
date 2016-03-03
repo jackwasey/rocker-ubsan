@@ -6,8 +6,9 @@ MAINTAINER "Carl Boettiger and Dirk Eddelbuettel" rocker-maintainers@eddelbuette
 
 # RUN echo "deb http://ftp.debian.org/debian experimental main" > /etc/apt/sources.list.d/debian-experimental.list
 
-# don't apt-get update: the parent image should be up-to-date already. This is docker rec.
-RUN apt-get install -t unstable -y \
+RUN apt-get update -qq \
+	&& apt-get dist-upgrade -y \
+	&& apt-get install -t unstable -y \
 		automake \
 	        clang-3.7 \
 	        cmake \
@@ -24,8 +25,8 @@ RUN apt-get install -t unstable -y \
 	        texlive-base 
 
 ## Check out R-devel
-# RUN cd /tmp \
-# 	&& svn co http://svn.r-project.org/R/trunk R-devel 
+RUN cd /tmp \
+	&& svn co http://svn.r-project.org/R/trunk R-devel 
 
 # SVN R-devel doesn't always compile. An alternative is to grab the devel tar:
 # https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either

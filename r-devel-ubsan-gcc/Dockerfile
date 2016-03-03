@@ -3,7 +3,7 @@
 FROM rocker/r-devel:latest
 
 # use unstable to get the right development library versions
-RUN apt-get install -y -t unstable \
+RUN apt-get update -y && apt-get dist-upgrade -y && apt-get install -y -t unstable \
   curl \
   fonts-inconsolata \
   git \
@@ -23,15 +23,12 @@ RUN apt-get install -y -t unstable \
 # SVN R-devel doesn't always compile. An alternative is to grab the devel tar:
 # https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
 #
-# the following is a rc version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
+# the following is a beta version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
 RUN rm -rf /tmp/R-devel \
       && cd /tmp \
       && curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz \
       # move rc to devel so i can switch back to svn easily
       && mv /tmp/R-rc /tmp/R-devel
-
-
-
 
 # GCC UBSAN and OpenMP don't work together in any version! appears to be no evidence of fix
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=64888

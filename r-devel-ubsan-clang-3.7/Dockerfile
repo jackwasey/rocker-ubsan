@@ -8,7 +8,9 @@ MAINTAINER "Carl Boettiger and Dirk Eddelbuettel" rocker-maintainers@eddelbuette
 ## Remain current
 # can't use debian clang because their build doesn't work with sanitizers
 # but can use clang to build clang
-RUN apt-get install -t unstable -y \
+RUN apt-get update -qq \
+	&& apt-get dist-upgrade -y \
+	&& apt-get install -t unstable -y \
 		automake \
 	        clang-3.7 \
 	        cmake \
@@ -25,8 +27,8 @@ RUN apt-get install -t unstable -y \
 	        texlive-base 
 
 ## Check out R-devel
-# RUN cd /tmp \
-#	&& svn co http://svn.r-project.org/R/trunk R-devel 
+RUN cd /tmp \
+	&& svn co http://svn.r-project.org/R/trunk R-devel 
 
 # SVN R-devel doesn't always compile. An alternative is to grab the devel tar:
 # https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
@@ -38,7 +40,7 @@ RUN rm -rf /tmp/R-devel \
       # move rc to devel so i can switch back to svn easily
       && mv /tmp/R-rc /tmp/R-devel
 
-ENV LLVM_REL RELEASE_371/final
+ENV LLVM_REL=RELEASE_371/final
 
 RUN cd /tmp
 RUN svn co https://llvm.org/svn/llvm-project/llvm/tags/$LLVM_REL llvm
