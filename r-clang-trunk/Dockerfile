@@ -1,5 +1,5 @@
 # don't acutally need r-devel for R, just all the dependencies.
-FROM clang-3.8
+FROM clang-trunk
 
 WORKDIR /usr/local/src
 
