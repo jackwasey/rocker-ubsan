@@ -10,9 +10,10 @@ WORKDIR /usr/local/src
 # https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
 #
 # the following is a rc version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
-RUN curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz \
-      # move rc to devel so i can switch back to svn easily
-      && mv R-rc R-devel
+RUN curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz 
+# move rc to devel so i can switch back to svn easily. It can also be R-patched
+# RUN mv R-rc R-devel
+RUN mv R-* R-devel
 
 # use config.site to set the R build environment
 COPY config.site R-devel/config.site

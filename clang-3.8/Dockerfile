@@ -1,21 +1,38 @@
 # don't acutally need r-devel for R, just all the dependencies.
-FROM llvm-3.8
+FROM rocker/r-devel:latest
 
-## LLVM already built in /usr/local/src
+RUN apt-get update -qq \
+	&& apt-get dist-upgrade -y \
+	&& apt-get install -t unstable -y --no-install-recommends \
+		automake \
+	        # clang-3.7 \
+	        cmake \
+                curl \
+	        fonts-inconsolata \
+	        git \
+	        libcurl4-openssl-dev \
+	        libssh2-1-dev \
+	        libssl-dev \
+	        libxml2-dev \
+	        pandoc \
+	        pandoc-citeproc \
+	        qpdf \
+	        texlive-base 
 
-
-# env should be inherited from llvm docker image
-# ENV LLVM_REL=RELEASE_380/rc2
+ENV LLVM_REL=/tags/RELEASE_380/final
 
 WORKDIR /usr/local/src
 
-# building on LLVM, so just get clang (and do extra stuff in another image)
-RUN svn co https://llvm.org/svn/llvm-project/cfe/tags/$LLVM_REL clang
-RUN svn co https://llvm.org/svn/llvm-project/compiler-rt/tags/$LLVM_REL compiler-rt
-RUN svn co https://llvm.org/svn/llvm-project/clang-tools-extra/tags/$LLVM_REL clang-tools-extra
-RUN svn co https://llvm.org/svn/llvm-project/libcxx/tags/$LLVM_REL libcxx
-RUN svn co https://llvm.org/svn/llvm-project/libcxxabi/tags/$LLVM_REL libcxxabi
-RUN svn co http://llvm.org/svn/llvm-project/openmp/tags/$LLVM_REL openmp
+# just build LLVM and clang first, extras built in subsequent Dockerfile
+RUN svn co https://llvm.org/svn/llvm-project/llvm/$LLVM_REL llvm
+
+# try to add omp at this stage
+RUN svn co https://llvm.org/svn/llvm-project/cfe/$LLVM_REL clang
+RUN svn co https://llvm.org/svn/llvm-project/compiler-rt/$LLVM_REL compiler-rt
+RUN svn co https://llvm.org/svn/llvm-project/clang-tools-extra/$LLVM_REL clang-tools-extra
+RUN svn co https://llvm.org/svn/llvm-project/libcxx/$LLVM_REL libcxx
+RUN svn co https://llvm.org/svn/llvm-project/libcxxabi/$LLVM_REL libcxxabi
+RUN svn co http://llvm.org/svn/llvm-project/openmp/$LLVM_REL openmp
 
 RUN mv clang llvm/tools
 RUN mv compiler-rt llvm/projects
@@ -24,24 +41,18 @@ RUN mv libcxx llvm/projects
 RUN mv libcxxabi llvm/projects
 RUN mv openmp llvm/projects
 
-# todo remove openmp from this image (it is in llvm)
-
-# TODO: no idea whether libc++ is actually building, being used, whether it should be used when building clang
-# see http://libcxx.llvm.org/docs/BuildingLibcxx.html
-# http://libcxx.llvm.org/docs/UsingLibcxx.html#alternate-libcxx
-
-RUN cd llvm-build \
-  && cmake \
+RUN mkdir llvm-build \
+  && cd llvm-build && \
+  cmake \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -DLLVM_TARGETS_TO_BUILD:STRING=host \
   -DCMAKE_INSTALL_PREFIX=/usr/local \
   -DCLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
   ../llvm 
 
-RUN make -j6 -C llvm-build \
-  && make -C llvm-build install \
-  && ldconfig
+RUN make -C llvm-build && make -j6 -C llvm-build install && ldconfig
 
-# don't rm yet while debugging
+#  && ldconfig
+# don't rm because we still have to build libcxx and libomp in another image
 #  && rm -rf llvm-build \
 
