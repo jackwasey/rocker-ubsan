@@ -1,5 +1,5 @@
 # don't acutally need r-devel for R, just all the dependencies.
-FROM clang-3.8
+FROM jackwasey/clang-3.8
 
 WORKDIR /usr/local/src
 
@@ -11,8 +11,6 @@ WORKDIR /usr/local/src
 #
 # the following is a rc version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
 RUN curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz 
-# move rc to devel so i can switch back to svn easily. It can also be R-patched
-# RUN mv R-rc R-devel
 RUN mv R-* R-devel
 
 # use config.site to set the R build environment
