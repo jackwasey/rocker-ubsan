@@ -1,7 +1,8 @@
 # don't acutally need r-devel for R, just all the dependencies.
 FROM rocker/r-devel:latest
 
-RUN apt-get install -t unstable -y --no-install-recommends \
+RUN apt-get update -qq \
+    && apt-get install -t unstable -y --no-install-recommends \
 		automake \
 	        cmake \
                 curl \
@@ -20,7 +21,7 @@ ENV LLVM_REL=trunk
 
 WORKDIR /usr/local/src
 
-RUN svn co https://llvm.org/svn/llvm-project/llvm/$LLVM_REL llvm
+RUN svn co https://llvm.org/svn/llvm-project/llvm/$LLVM_REL llvm \
  && svn co https://llvm.org/svn/llvm-project/cfe/$LLVM_REL clang \
  && svn co https://llvm.org/svn/llvm-project/compiler-rt/$LLVM_REL compiler-rt \
  && svn co https://llvm.org/svn/llvm-project/clang-tools-extra/$LLVM_REL clang-tools-extra \
@@ -39,9 +40,10 @@ RUN mkdir llvm-build \
   -DCMAKE_INSTALL_PREFIX=/usr/local \
   -DCLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
   ../llvm \
-    && make -C llvm-build \
-    && make -j6 -C llvm-build install \
-    && make -C llvm-build clean \
+    && make -j6 \
+    && make install \
+    && make clean \
+    && cd .. \
     && rm -rf llvm-build \
     && ldconfig 
 

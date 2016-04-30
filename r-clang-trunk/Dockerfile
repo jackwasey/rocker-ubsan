@@ -16,7 +16,16 @@ RUN mv R-* R-devel
 # use config.site to set the R build environment
 COPY config.site R-devel/config.site
 RUN cd R-devel \
-	&& ./configure \
+	&& CFLAGS="-pipe -std=gnu99 -Wall -Wextra -pedantic -g" \
+	   CXXFLAGS="-pipe -Wall -Wextra -pedantic -g" \
+	   FFLAGS="-pipe -g" \
+	   FCFLAGS="-pipe -g" \
+	   CC="clang -fsanitize=undefined -fno-sanitize=float-divide-by-zero,vptr,function -fno-sanitize-recover" \
+	   CXX="clang++ -fsanitize=undefined -fno-sanitize=float-divide-by-zero,vptr,function -fno-sanitize-recover" \
+	   CXX1X="clang++ -fsanitize=undefined -fno-sanitize=float-divide-by-zero,vptr,function -fno-sanitize-recover" \
+	   FC="gfortran" \
+	   F77="gfortran" \
+           ./configure \
                --enable-R-shlib \
 	       --without-blas \
 	       --without-lapack \

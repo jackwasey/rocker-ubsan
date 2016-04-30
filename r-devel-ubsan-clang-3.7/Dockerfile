@@ -1,15 +1,10 @@
 FROM rocker/r-devel:latest
 
-## This handle reaches Carl and Dirk
-MAINTAINER "Carl Boettiger and Dirk Eddelbuettel" rocker-maintainers@eddelbuettel.com
-
 # RUN echo "deb http://ftp.debian.org/debian experimental main" > /etc/apt/sources.list.d/debian-experimental.list
 
-## Remain current
 # can't use debian clang because their build doesn't work with sanitizers
 # but can use clang to build clang
 RUN apt-get update -qq \
-	&& apt-get dist-upgrade -y \
 	&& apt-get install -t unstable -y \
 		automake \
 	        clang-3.7 \
@@ -24,7 +19,8 @@ RUN apt-get update -qq \
 	        pandoc \
 	        pandoc-citeproc \
 	        qpdf \
-	        texlive-base 
+	        texlive-base \
+         && apt-get clean
 
 ## Check out R-devel
 RUN cd /tmp \
@@ -67,25 +63,15 @@ RUN cd llvm-build && \
   -DCLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
   ../llvm
 
-# TODO: consider using clang to build clang
-#  -DCMAKE_C_COMPILER=clang-3.7 \
-#  -DCMAKE_CXX_COMPILER=clang-3.7 \
-
-# don't use SupC++, we're going to use c++abi from LLVM project.
-#  -DLIBCXX_CXX_ABI=libsupc++ \
-#  -DLIBCXX_LIBSUPCXX_INCLUDE_PATHS="/usr/include/c++/5/;/usr/include/c++/5/x86_64-linux-gnu/" \
-#  -DLLVM_TARGETS_TO_BUILD:STRING=X86 \
-
 # don't use make -j as it may be unfriendly to hosted docker builds.
-RUN make -C llvm-build && make -C llvm-build install && rm -rf llvm-build
-
-# eventually clean, but for testing, leave the build tree for diagnosis.
-# RUN rm -rf llvm-build
-
-RUN ldconfig
+RUN make -C llvm-build \
+    && make -C llvm-build install \
+    && rm -rf llvm-build \
+    && ldconfig -v
 
 # use config.site to set the R build environment
 COPY config.site /tmp/R-devel/config.site
+
 RUN cd /tmp/R-devel \
 	&& ./configure \
                --enable-R-shlib \
@@ -96,7 +82,9 @@ RUN cd /tmp/R-devel \
 	       --program-suffix=devsan \
      	&& make \
 	&& make install \
-	&& make clean
+	&& make clean \
+        && cd \
+        && rm -rf /tmp/R-devel
 
 ## Set Renviron to get libs from base R install
 RUN echo "R_LIBS=\${R_LIBS-'/usr/local/lib/R/site-library:/usr/local/lib/R/library:/usr/lib/R/library'}" >> /usr/local/lib/R/etc/Renviron
@@ -107,22 +95,3 @@ RUN echo 'options("repos"="https://cran.rstudio.com")' >> /usr/local/lib/R/etc/R
 # R doesn't actually run at all without this (can be considered a test of whether the sanitizers were actually compiled in correctly!)
 ENV ASAN_OPTIONS 'detect_leaks=0:detect_odr_violation=0'
 
-## Check out littler
-RUN cd /tmp \
-	&& git clone https://github.com/eddelbuettel/littler.git
-
-# R must have been built as a shared library so littler can be built and link to it:
-#RUN cd /tmp/littler \
-#	&& CC="clang-3.7 -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero,vptr,function -fno-sanitize-recover=undefined,integer" PATH="/usr/local/lib/R/bin/:$PATH" ./bootstrap \
-#	&& ./configure --prefix=/usr \
-#	&& make \
-#	&& make install \
-#	&& cp -vax examples/*.r /usr/local/bin 
-
-#RUN cd /usr/local/bin \
-#	&& mv R Rdevel \
-#	&& mv Rscript Rscriptdevel \
-#	&& ln -s Rdevel RD \
-#	&& ln -s Rscriptdevel RDscript
-
-RUN Rscript -e "install.packages(c('stringi', 'Rcpp', 'devtools')); library(devtools)"

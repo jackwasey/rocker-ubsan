@@ -1,12 +1,8 @@
 FROM rocker/r-devel:latest
 
-## This handle reaches Carl and Dirk
-MAINTAINER "Carl Boettiger and Dirk Eddelbuettel" rocker-maintainers@eddelbuettel.com
-
 # RUN echo "deb http://ftp.debian.org/debian experimental main" > /etc/apt/sources.list.d/debian-experimental.list
 
 RUN apt-get update -qq \
-	&& apt-get dist-upgrade -y \
 	&& apt-get install -t unstable -y \
 		automake \
 	        clang-3.7 \
@@ -21,25 +17,26 @@ RUN apt-get update -qq \
 	        pandoc \
 	        pandoc-citeproc \
 	        qpdf \
-	        texlive-base 
+	        texlive-base \
+        && apt-get clean
+
+WORKDIR /usr/local/src
 
 ## Check out R-devel
-RUN cd /tmp \
-	&& svn co http://svn.r-project.org/R/trunk R-devel 
+RUN svn co http://svn.r-project.org/R/trunk R-devel 
 
 # SVN R-devel doesn't always compile. An alternative is to grab the devel tar:
 # https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
 #
 # the following is a rc version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
-RUN rm -rf /tmp/R-devel \
-      && cd /tmp \
-      && curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz \
-      # move rc to devel so i can switch back to svn easily
-      && mv /tmp/R-rc /tmp/R-devel
+# RUN rm -rf /tmp/R-devel \
+#      && cd /tmp \
+#      && curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz \
+#      # move rc to devel so i can switch back to svn easily
+#      && mv /tmp/R-rc /tmp/R-devel
 
 # perhaps prefer a 3.8 branch here, not always trunk.
 # it will be llvm-project/*/tags/RELEASE_380/final or rc2 instead of final
-RUN cd /tmp
 RUN svn co https://llvm.org/svn/llvm-project/llvm/trunk llvm
 RUN svn co https://llvm.org/svn/llvm-project/cfe/trunk clang
 RUN svn co https://llvm.org/svn/llvm-project/clang-tools-extra/trunk clang-tools-extra
@@ -62,22 +59,16 @@ RUN mkdir llvm-build \
   -DLLVM_TARGETS_TO_BUILD:STRING=host \
   -DCMAKE_INSTALL_PREFIX=/usr/local \
   -DCLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
-  ../llvm 
-
-# don't use make -j as it may be unfriendly to hosted docker builds.
-RUN make -C llvm-build \
-  && make -C llvm-build install \
+  ../llvm \
+  && make -j5 \
+  && make install \
+  && cd \
   && rm -rf llvm-build \
   && ldconfig
 
-# TODO: consider using clang to build clang
-#  -DCMAKE_C_COMPILER=clang-3.7 \
-#  -DCMAKE_CXX_COMPILER=clang-3.7 \
-
 # use config.site to set the R build environment
 COPY config.site /tmp/R-devel/config.site
-RUN cd /tmp/R-devel \
-	&& ./configure \
+RUN ./configure \
                --enable-R-shlib \
 	       --without-blas \
 	       --without-lapack \
@@ -86,7 +77,8 @@ RUN cd /tmp/R-devel \
 	       --program-suffix=devsan \
      	&& make \
 	&& make install \
-	&& make clean
+	&& make clean \
+        && rm -rf /usr/local/src/R-devel
 
 ## Set Renviron to get libs from base R install
 RUN echo "R_LIBS=\${R_LIBS-'/usr/local/lib/R/site-library:/usr/local/lib/R/library:/usr/lib/R/library'}" >> /usr/local/lib/R/etc/Renviron

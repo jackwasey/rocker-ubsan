@@ -1,13 +1,9 @@
 # don't acutally need r-devel for R, just all the dependencies.
 FROM rocker/r-devel:latest
 
-## This handle reaches Carl and Dirk
-MAINTAINER "Carl Boettiger and Dirk Eddelbuettel" rocker-maintainers@eddelbuettel.com
-
 # RUN echo "deb http://ftp.debian.org/debian experimental main" > /etc/apt/sources.list.d/debian-experimental.list
 
 RUN apt-get update -qq \
-	&& apt-get dist-upgrade -y \
 	&& apt-get install -t unstable -y \
 		automake \
 	        clang-3.7 \
@@ -22,7 +18,8 @@ RUN apt-get update -qq \
 	        pandoc \
 	        pandoc-citeproc \
 	        qpdf \
-	        texlive-base 
+	        texlive-base \
+        && apt-get clean
 
 ## Check out R-devel
 RUN cd /tmp \

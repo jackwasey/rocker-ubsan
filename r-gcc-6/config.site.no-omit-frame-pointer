@@ -1,0 +1,8 @@
+        CC="gcc -std=gnu99 -fsanitize=address,undefined -fno-omit-frame-pointer"
+        CXX="g++ -fsanitize=address,undefined  -fno-omit-frame-pointer -fno-sanitize=object-size,vptr"
+        CXX1X="g++ -fsanitize=address,undefined  -fno-omit-frame-pointer -fno-sanitize=object-size,vptr"
+	CFLAGS="-g -O0 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable"
+	CXXFLAGS="-g -O0 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable"
+        FC="gfortran -fsanitize=address,undefined -fno-omit-frame-pointer"
+        F77="gfortran -fsanitize=address,undefined -fno-omit-frame-pointer"
+        MAIN_LDFLAGS="-fsanitize=address,undefined"
