@@ -1,0 +1,11 @@
+CC="gcc-6 -std=gnu99 -fsanitize=address,undefined -fno-omit-frame-pointer"
+CXX="g++-6 -std=c++11 -fsanitize=address,undefined -fno-sanitize=object-size,vptr -fno-omit-frame-pointer"
+CXX1X="g++-6 -std=c++11 -fsanitize=address,undefined -fno-sanitize=object-size,vptr -fno-omit-frame-pointer"
+CFLAGS="-g -O0 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable"
+CXXFLAGS="-g -O0 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable"
+FC="gfortran-6"
+F77="gfortran-6"
+FFLAGS="-g -O0 -march=native"
+FCFLAGS="-g -O0 -march=native"
+## to link the runtime libraries into the R executable if it was not specified as part of ‘CC’ when R was built. 
+#	MAIN_LDFLAGS=-fsanitize=address,undefined
