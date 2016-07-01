@@ -9,5 +9,5 @@ if [[ -z "$dir" ]]; then
     exit 1
 fi
 
-docker run --rm -ti "jackwasey/$dir" $dir bash
+docker run --rm -ti "jackwasey/$dir" "$dir" bash
 

@@ -10,4 +10,4 @@ if [[ -z "$dir" ]]; then
 fi
 
 
-docker build -t "jackwasey/$dir" $dir
+docker build -t "jackwasey/$dir" "$dir"
