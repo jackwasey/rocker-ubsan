@@ -17,7 +17,9 @@ RUN apt-get update -qq \
 	        qpdf \
 	        texlive-base 
 
-ENV LLVM_REL=/tags/RELEASE_380/final
+# LLVM_REL_VER must be passed in to docker build command
+ARG LLVM_REL_VER
+ENV LLVM_REL=/tags/RELEASE_${LLVM_REL_VER}/final
 
 WORKDIR /usr/local/src
 
