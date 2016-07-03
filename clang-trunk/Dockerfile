@@ -18,7 +18,7 @@ RUN apt-get update -qq \
 	        texlive-base 
 
 ENV LLVM_REL=trunk
-
+ARG JW_DOCKER_BUILD_DIR=
 WORKDIR /usr/local/src
 
 RUN svn co https://llvm.org/svn/llvm-project/llvm/$LLVM_REL llvm \

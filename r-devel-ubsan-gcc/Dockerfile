@@ -20,25 +20,18 @@ RUN apt-get update -y && apt-get install -y -t unstable \
 
 WORKDIR /usr/local/src
 
-RUN svn co http://svn.r-project.org/R/trunk R-devel
-
-# SVN R-devel doesn't always compile. An alternative is to grab the devel tar:
-# https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
-#
-# the following is a beta version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
-# RUN rm -rf /tmp/R-devel \
-#      && cd /tmp \
-#      && curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz \
-#      # move rc to devel so i can switch back to svn easily
-#      && mv /tmp/R-rc /tmp/R-devel
+COPY get-r.sh .
+RUN ./get-r.sh
 
 # GCC UBSAN and OpenMP don't work together in any version! appears to be no evidence of fix
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=64888
 
 ENV ASAN_OPTIONS detect_leaks=0:detect_odr_violation=0
 
-# build R-devel again, but with sanitizers
-RUN R_PAPERSIZE=letter \
+# no config.site at present
+
+RUN cd R-devel \
+	&& R_PAPERSIZE=letter \
            R_BATCHSAVE="--no-save --no-restore" \
            R_BROWSER=xdg-open \
            PAGER=/usr/bin/pager \
@@ -48,8 +41,8 @@ RUN R_PAPERSIZE=letter \
            R_PRINTCMD=/usr/bin/lpr \
            LIBnn=lib \
            AWK=/usr/bin/awk \
-           CFLAGS="-g -Wall -pedantic -O2" \
-           CXXFLAGS="-g -Wall -pedantic -O2" \
+           CFLAGS="-g -Wall -pedantic -O0" \
+           CXXFLAGS="-g -Wall -pedantic -O0" \
            CC="gcc -std=gnu99 -fsanitize=address,undefined -fno-omit-frame-pointer" \
            CXX="g++ -fsanitize=address,undefined  -fno-omit-frame-pointer -fno-sanitize=object-size,vptr" \
            CXX1X="g++ -fsanitize=address,undefined  -fno-omit-frame-pointer -fno-sanitize=object-size,vptr" \
@@ -65,13 +58,16 @@ RUN R_PAPERSIZE=letter \
                --with-readline \
                --without-recommended-packages \
                --program-suffix=dev \
-        && make -j5 \
+        && make -j8 \
         && make install \
         && make clean \
-        && cd \
-        && rm -rf /usr/local/src/R-devel
+        && cd .. \
+        && rm -rf R-devel
 
 # remove or keep -O0 flags? Not sure which would be most helpful. Most code in production use is compiled O2, but I don't know whether O0 would uncover the same UBSAN bugs, or just allow them to be characterized more easily. BDR used -O2 in the memtests he did on this package.
+
+# don't need this, since we don't have a config.site file at present, but required to build docker image
+ARG JW_DOCKER_BUILD_DIR=.
 
 ENV LD_PRELOAD /usr/lib/x86_64-linux-gnu/libasan.so.2
 CMD ["Rdevel"]

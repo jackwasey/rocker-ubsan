@@ -3,18 +3,14 @@ FROM jackwasey/clang-trunk
 
 WORKDIR /usr/local/src
 
-## Check out R-devel
-# RUN svn co http://svn.r-project.org/R/trunk R-devel 
+# for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
+COPY get-r.sh .
+RUN ./get-r.sh
 
-# SVN R-devel doesn't always compile. An alternative is to grab the devel tar:
-# https://stat.ethz.ch/R/daily/R-devel.tar.bz2 but this is just a svn snap which may not compile either
-#
-# the following is a rc version, and appears to be attached to a revision of SVN repo which is not the latest (and thus suggests it is more likely to compile) Temporarily use this instead of SVN
-RUN curl https://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz
-RUN mv R-* R-devel
+ARG JW_DOCKER_BUILD_DIR=.
+COPY ${JW_DOCKER_BUILD_DIR}/* ./
+RUN mv config.site R-devel/config.site
 
-# use config.site to set the R build environment
-COPY config.site R-devel/config.site
 RUN cd R-devel \
 	&& CFLAGS="-pipe -std=gnu99 -Wall -Wextra -pedantic -g" \
 	   CXXFLAGS="-pipe -Wall -Wextra -pedantic -g" \

@@ -62,15 +62,16 @@ RUN apt-get update -qq \
 
 WORKDIR /usr/local/src
 
-# or subversion?
-RUN curl http://cran.rstudio.com/src/base-prerelease/R-latest.tar.gz | tar xz 
-RUN mv R-* R-devel
+COPY get-r.sh .
+RUN ./get-r.sh
 
-ADD config.site R-devel
+ARG JW_DOCKER_BUILD_DIR=.
+COPY ${JW_DOCKER_BUILD_DIR}/* ./
+RUN mv config.site R-devel/config.site
+
 RUN mkdir -p ~/.R
-ADD Makevars ~/.R
+RUN mv Makevars ~/.R
 
-# no config.site, default is to use gcc/g++ from Makeconf?
 # must disable openmp to enable ubsan when compiling R itself
 RUN cd R-devel \
 	&& R_PAPERSIZE=letter \
