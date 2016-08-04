@@ -14,10 +14,8 @@ docker pull rocker/r-devel >> $OUT
 docker pull debian:stretch >> $OUT
 
 for dir in */ ; do
-    #dir_trimmed=${dir%/}
     dir_trimmed=$(echo "$dir" | sed 's:/*$::')
     printf "Building $LIGHTBLUE%s$NC\n" "$dir_trimmed" | tee -a $OUT
-    #printf "building %s\n" "$dir_trimmed" >> $OUT
     ./build.sh "$dir_trimmed" >> $OUT
 done
 
