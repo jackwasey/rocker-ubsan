@@ -1,20 +1,19 @@
 # remember to RECONFIGURE before MAKE for any changes in config.site to be picked up.
+ # r-clang-trunk was just using undefined, not address SAN, and --no-sanitize-recover, did not have no-omit-frame-pointer
            CC="clang -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero,vptr,function -fno-omit-frame-pointer" 
 
 # try -nostdinc -nostdlibinc to stop it puling in gcc crap every time.
 # -nodefaultlibs dropped - it can't seem to find pthread things even if I specify -lgcc etc etc (-lc++ -lc++abi -lm -lc -lgcc_s -lgcc )
+ # r-clang-trunk did not have -stdlib=libc++ or no-omit-frame-pointer, or the c++ path
            CXX="clang++ -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero,vptr,function -stdlib=libc++ -fno-omit-frame-pointer -I/usr/local/include/c++/v1 -I/usr/local/include"
 	   LDFLAGS="-L/usr/local/lib/clang/3.8.0/lib/linux -L/usr/local/lib -lc++abi" 
 
         # R figures out whether we need -std=c++11 itself, so don't need to add flag here (and it can be harmful?)
            CXX1X="${CXX}"
-           CFLAGS="-pipe -Wall -pedantic -g -O2 -mtune=native" 
-           CXXFLAGS="-pipe -Wall -pedantic -g -O2 -mtune=native" 
-
-           FC="gfortran" 
-           F77="gfortran" 
-           FFLAGS="-pipe -pedantic -g -O2 -mtune=native" 
-           FCFLAGS="-pipe -pedantic -g -O2 -mtune=native" 
+      
+           # may need "-std=gnu99" (was in r-clang-trunk build
+           CFLAGS="-pipe -Wall -Wextra -pedantic -g -O0 -mtune=native" 
+           CXXFLAGS="-pipe -Wall -Wextra -pedantic -g -O0 -mtune=native" 
 
            MAIN_LD=${CXX}
 # is this OPENMP_CFLAGS instead?

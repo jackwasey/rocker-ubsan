@@ -17,8 +17,14 @@ RUN apt-get update -qq \
 	        qpdf \
 	        texlive-base 
 
-ENV LLVM_REL=trunk
+# LLVM_REL_VER must be passed in to docker build command
+ARG LLVM_REL_VER
+ARG LLVM_REL_STATUS
 ARG JW_DOCKER_BUILD_DIR=
+# this may fail if there is a release candidate but no "final"
+# solution may be just to query the parent directory and find last rc version if no final
+ENV LLVM_REL=/tags/RELEASE_${LLVM_REL_VER}/${LLVM_REL_STATUS}
+
 WORKDIR /usr/local/src
 
 RUN svn co https://llvm.org/svn/llvm-project/llvm/$LLVM_REL llvm \
@@ -45,5 +51,5 @@ RUN mkdir llvm-build \
     && make clean \
     && cd .. \
     && rm -rf llvm-build \
-    && ldconfig 
+    && ldconfig
 
