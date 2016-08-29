@@ -4,7 +4,7 @@
 
 # try -nostdinc -nostdlibinc to stop it puling in gcc crap every time.
 # -nodefaultlibs dropped - it can't seem to find pthread things even if I specify -lgcc etc etc (-lc++ -lc++abi -lm -lc -lgcc_s -lgcc )
- # r-clang-trunk did not have -stdlib=libc++ or no-omit-frame-pointer, or the c++ path
+# r-clang-trunk did not have -stdlib=libc++ or no-omit-frame-pointer, or the c++ path
            CXX="clang++ -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero,vptr,function -stdlib=libc++ -fno-omit-frame-pointer -I/usr/local/include/c++/v1 -I/usr/local/include"
 	   LDFLAGS="-L/usr/local/lib/clang/3.8.0/lib/linux -L/usr/local/lib -lc++abi" 
 
@@ -12,8 +12,8 @@
            CXX1X="${CXX}"
       
            # may need "-std=gnu99" (was in r-clang-trunk build
-           CFLAGS="-pipe -Wall -Wextra -pedantic -g -O0 -mtune=native" 
-           CXXFLAGS="-pipe -Wall -Wextra -pedantic -g -O0 -mtune=native" 
+           CFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native" 
+           CXXFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native" 
 
            MAIN_LD=${CXX}
 # is this OPENMP_CFLAGS instead?
