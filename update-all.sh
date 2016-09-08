@@ -13,11 +13,15 @@ printf "writing to temp dir $LIGHTBLUE%s$NC\n" "$OUT"
 docker pull rocker/r-devel >> $OUT
 docker pull debian:stretch >> $OUT
 
-for dir in */ ; do
+while read dir; do
+    if [ ! -d "$dir" ]; then
+        echo "$dir not found"
+        exit 1
+    fi
     dir_trimmed=$(echo "$dir" | sed 's:/*$::')
     printf "Building $LIGHTBLUE%s$NC\n" "$dir_trimmed" | tee -a $OUT
     ./build.sh "$dir_trimmed" >> $OUT
-done
+done < active.txt
 
 # if everything went ok, then delete tmp
 rm -rf "$OUT"
