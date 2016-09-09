@@ -32,12 +32,12 @@ case "$JW_DOCKER_BUILD_DIR" in
 esac 
 
 if [ -n "$LLVM_REL_STR" ]; then
-    LLVM_REL_VER=$(curl --retry 5 -s 'https://llvm.org/svn/llvm-project/llvm/tags/' | sed 's/<[^>]*>//g' | grep "$LLVM_REL_STR" | sed 's/^[[:space:]]*RELEASE_//g' | sed 's/\/$//' | tail -1)
+    LLVM_REL_VER=$(curl --retry 5 -s 'https://llvm.org/svn/llvm-project/llvm/tags/' | sed 's/<[^>]*>//g' | grep "$LLVM_REL_STR" | sed 's/^[[:space:]]*RELEASE_//g' | sed 's/\/$//' | tail -1  | tr -d '[[:space:]]')
     printf "using LLVM_REL_VER=%s\n" "$LLVM_REL_VER"
     LLVM_REL_VER_ARG=--build-arg=LLVM_REL_VER=$LLVM_REL_VER
     printf "using LLVM_REL_VER_ARG=%s\n" "$LLVM_REL_VER_ARG"
 
-    LLVM_REL_STATUS=$(curl --retry 5 -s "https://llvm.org/svn/llvm-project/llvm/tags/RELEASE_$LLVM_REL_VER/" | sed 's/<[^>]*>//g' | grep "rc\|final" | head -1 | sed 's/[[:blank:]]\|\///g')
+    LLVM_REL_STATUS=$(curl --retry 5 -s "https://llvm.org/svn/llvm-project/llvm/tags/RELEASE_$LLVM_REL_VER/" | sed 's/<[^>]*>//g' | grep "rc\|final" | head -1 | sed 's/[[:blank:]]\|\///g' | tr -d '[[:space:]]')
     printf "using LLVM_REL_STATUS=%s\n" "$LLVM_REL_STATUS"
     LLVM_REL_STATUS_ARG=--build-arg=LLVM_REL_STATUS=$LLVM_REL_STATUS
     printf "using LLVM_REL_STATUS_ARG=%s\n" "$LLVM_REL_STATUS_ARG"
