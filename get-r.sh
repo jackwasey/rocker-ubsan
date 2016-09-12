@@ -8,20 +8,22 @@ IFS=$'\n\t'
 
 VER=${1:-svn}
 CRAN_URL=https://cloud.r-project.org
+SVN_URL=https://svn.r-project.org/R/trunk
 URL=""
 
 echo "Version $VER of R requested for download"
 
 if [ -d "R-devel" ]; then
-    echo "R-devel directory already exists"
-    exit 1
+    echo "R-devel directory already exists, deleting it"
+    rm -rf R-devel
 fi
 
 # example URL: https://cloud.r-project.org/src/base/R-3/R-3.0.0.tar.gz
 
 if [[ "$VER" = "svn" ]]; then
     ## Check out R-devel, but it doesn't always compile, whereas the tar balls probably do
-    svn co https://svn.r-project.org/R/trunk R-devel
+    svn co "$SVN_URL" R-devel
+    exit 0
 elif [[ "$VER" = "rel" ]]; then
     URL="${CRAN_URL}/src/base/R-latest.tar.gz"
 elif [[ "$VER" = "pre" ]]; then
@@ -34,5 +36,5 @@ else
     echo "Version ${VER} not recognized"
     exit 1
 fi
-mv R-* R-devel
 
+mv R-* R-devel

@@ -19,7 +19,7 @@ RUN cd R-devel \
 	       --with-readline \
 	       --without-recommended-packages \
 	       --program-suffix=devsan \
-     	&& make \
+     	&& make -j4 \
 	&& make install \
 	&& make clean
 

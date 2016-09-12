@@ -3,19 +3,19 @@ FROM rocker/r-devel:latest
 
 RUN apt-get update -qq \
     && apt-get install -t unstable -y --no-install-recommends \
-		automake \
-	        cmake \
-                curl \
-	        fonts-inconsolata \
-	        git \
-	        libcurl4-openssl-dev \
-	        libssh2-1-dev \
-	        libssl-dev \
-	        libxml2-dev \
-	        pandoc \
-	        pandoc-citeproc \
-	        qpdf \
-	        texlive-base 
+        automake \
+        cmake \
+        curl \
+        fonts-inconsolata \
+        git \
+        libcurl4-openssl-dev \
+        libssh2-1-dev \
+        libssl-dev \
+        libxml2-dev \
+        pandoc \
+        pandoc-citeproc \
+        qpdf \
+        texlive-base
 
 # LLVM_REL_VER must be passed in to docker build command
 ARG LLVM_REL_VER
@@ -36,7 +36,7 @@ RUN svn co --quiet https://llvm.org/svn/llvm-project/llvm/$LLVM_REL llvm \
  && svn co --quiet http://llvm.org/svn/llvm-project/openmp/$LLVM_REL openmp \
  && mv clang llvm/tools \
  && mv clang-tools-extra llvm/tools/clang/tools \
- && mv compiler-rt libcxx libcxxabi openmp llvm/projects 
+ && mv compiler-rt libcxx libcxxabi openmp llvm/projects
 
 RUN mkdir llvm-build \
   && cd llvm-build \
@@ -52,4 +52,3 @@ RUN mkdir llvm-build \
     && cd .. \
     && rm -rf llvm-build \
     && ldconfig
-
