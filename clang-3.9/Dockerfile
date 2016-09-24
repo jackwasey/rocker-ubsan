@@ -27,13 +27,13 @@ ENV LLVM_REL=/tags/RELEASE_${LLVM_REL_VER}/${LLVM_REL_STATUS}
 
 WORKDIR /usr/local/src
 
-RUN svn co --quiet https://llvm.org/svn/llvm-project/llvm/$LLVM_REL llvm \
- && svn co --quiet https://llvm.org/svn/llvm-project/cfe/$LLVM_REL clang \
- && svn co --quiet https://llvm.org/svn/llvm-project/compiler-rt/$LLVM_REL compiler-rt \
- && svn co --quiet https://llvm.org/svn/llvm-project/clang-tools-extra/$LLVM_REL clang-tools-extra \
- && svn co --quiet https://llvm.org/svn/llvm-project/libcxx/$LLVM_REL libcxx \
- && svn co --quiet https://llvm.org/svn/llvm-project/libcxxabi/$LLVM_REL libcxxabi \
- && svn co --quiet http://llvm.org/svn/llvm-project/openmp/$LLVM_REL openmp \
+RUN svn co  https://llvm.org/svn/llvm-project/llvm/$LLVM_REL llvm \
+ && svn co  https://llvm.org/svn/llvm-project/cfe/$LLVM_REL clang \
+ && svn co  https://llvm.org/svn/llvm-project/compiler-rt/$LLVM_REL compiler-rt \
+ && svn co  https://llvm.org/svn/llvm-project/clang-tools-extra/$LLVM_REL clang-tools-extra \
+ && svn co  https://llvm.org/svn/llvm-project/libcxx/$LLVM_REL libcxx \
+ && svn co  https://llvm.org/svn/llvm-project/libcxxabi/$LLVM_REL libcxxabi \
+ && svn co  http://llvm.org/svn/llvm-project/openmp/$LLVM_REL openmp \
  && mv clang llvm/tools \
  && mv clang-tools-extra llvm/tools/clang/tools \
  && mv compiler-rt libcxx libcxxabi openmp llvm/projects
@@ -52,3 +52,4 @@ RUN mkdir llvm-build \
     && cd .. \
     && rm -rf llvm-build \
     && ldconfig
+
