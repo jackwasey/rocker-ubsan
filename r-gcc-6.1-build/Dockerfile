@@ -5,8 +5,10 @@ RUN apt-get update -qq \
 		automake \
 	        cmake \
                 curl \
+                dirmngr \
 	        fonts-inconsolata \
 	        git \
+                gnupg \
 	        libcurl4-openssl-dev \
 	        libssh2-1-dev \
 	        libssl-dev \
