@@ -2,7 +2,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-export JW_DOCKER_BUILD_DIR=${1:-}
+JW_DOCKER_BUILD_DIR=${1:-}
+# drop trailing slash
+JW_DOCKER_BUILD_DIR=${JW_DOCKER_BUILD_DIR/%\//}
 
 if [[ -z "$JW_DOCKER_BUILD_DIR" ]]; then
     echo "usage: $0 NAME"
@@ -29,7 +31,7 @@ case "$JW_DOCKER_BUILD_DIR" in
     ;;
     *)
     echo "unknown clang version requested via JW_DOCKER_BUILD_DIR"
-esac 
+esac
 
 if [ -n "$LLVM_REL_STR" ]; then
     LLVM_REL_VER=$(curl --retry 5 -s 'https://llvm.org/svn/llvm-project/llvm/tags/' | sed 's/<[^>]*>//g' | grep "$LLVM_REL_STR" | sed 's/^[[:space:]]*RELEASE_//g' | sed 's/\/$//' | tail -1  | tr -d '[[:space:]]')
@@ -48,5 +50,4 @@ docker build \
              --build-arg="JW_DOCKER_BUILD_DIR=$JW_DOCKER_BUILD_DIR" \
              -t "jackwasey/$JW_DOCKER_BUILD_DIR" \
              -f "$JW_DOCKER_BUILD_DIR/Dockerfile" \
-             . 
-
+             .

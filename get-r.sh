@@ -31,10 +31,10 @@ elif [[ "$VER" = "pre" ]]; then
 elif [[ $VER =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     URL="${CRAN_URL}/src/base/R-3/R-${VER}.tar.gz"
     echo "Getting R source from: $URL"
-    curl --retry 5 "$URL" | tar xz
 else
     echo "Version ${VER} not recognized"
     exit 1
 fi
 
+curl --retry 5 "$URL" | tar xz
 mv R-* R-devel

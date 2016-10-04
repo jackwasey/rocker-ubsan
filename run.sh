@@ -3,6 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 dir=${1:-}
+# drop trailing slash
 dir=${dir/%\//}
 
 if [[ -z "$dir" ]]; then
