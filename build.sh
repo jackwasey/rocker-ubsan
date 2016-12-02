@@ -2,6 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+set -x
+
 JW_DOCKER_BUILD_DIR=${1:-}
 # drop trailing slash
 JW_DOCKER_BUILD_DIR=${JW_DOCKER_BUILD_DIR/%\//}

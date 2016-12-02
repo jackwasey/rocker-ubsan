@@ -5,7 +5,7 @@ WORKDIR /usr/local/src
 
 # for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
 COPY get-r.sh .
-RUN ./get-r.sh
+RUN ./get-r.sh pre
 
 ARG JW_DOCKER_BUILD_DIR=.
 COPY ${JW_DOCKER_BUILD_DIR}/* ./

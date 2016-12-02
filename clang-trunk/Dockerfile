@@ -23,7 +23,8 @@ ARG LLVM_REL_STATUS
 ARG JW_DOCKER_BUILD_DIR=
 # this may fail if there is a release candidate but no "final"
 # solution may be just to query the parent directory and find last rc version if no final
-ENV LLVM_REL=/tags/RELEASE_${LLVM_REL_VER}/${LLVM_REL_STATUS}
+#ENV LLVM_REL=/tags/RELEASE_${LLVM_REL_VER}/${LLVM_REL_STATUS}
+ENV LLVM_REL=/trunk
 
 WORKDIR /usr/local/src
 
