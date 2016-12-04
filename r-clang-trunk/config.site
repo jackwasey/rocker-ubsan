@@ -3,7 +3,11 @@
 
 # there are other sanitizers, too...
 #CC="clang -fsanitize=address,undefined -fno-sanitize=vptr,function -fno-omit-frame-pointer"
-CC="clang -fsanitize=undefined -fno-sanitize=float-divide-by-zero,vptr,function -fno-omit-frame-pointer"
+#CC="clang -fsanitize=undefined -fno-sanitize=float-divide-by-zero,vptr,function -fno-omit-frame-pointer"
+# exactly what Ripley claims to use:
+CC="clang -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer"
+# same without address san, which stops current clang trunk from compiling anything
+CC="clang -fsanitize=undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer"
 
 # try -nostdinc -nostdlibinc to stop it puling in gcc crap every time.
 # -nodefaultlibs dropped - it can't seem to find pthread things even if I specify -lgcc etc etc (-lc++ -lc++abi -lm -lc -lgcc_s -lgcc )
@@ -15,11 +19,17 @@ LDFLAGS="-L/usr/local/lib/clang/3.8.0/lib/linux -L/usr/local/lib -lc++abi"
 CXX1X="${CXX}"
 
 # may need "-std=gnu99" (was in r-clang-trunk build
-CFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native"
+#CFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native"
+# CFLAGS which Ripley claims to use for clang:
+CFLAGS="-g -O3 -Wall -pedantic -mtune=native"
 CXXFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native"
 
-MAIN_LD=${CXX}
-# is this OPENMP_CFLAGS instead?
+#MAIN_LD=${CXX}
+# exactly as Ripley has MAIN_LD:
+MAIN_LD="clang++ -stdlib=libc++ -fsanitize=undefined,address"
+# same as Riply with address sanitizer
+MAIN_LD="clang++ -stdlib=libc++ -fsanitize=undefined"
+# is this OPENMP_CFLAGS instead? Ripley uses R_OPENMP_CFLAGS for sanitizer testing
 R_OPENMP_CFLAGS=-fopenmp
 R_LD_LIBRARY_PATH=/usr/local/lib
 

@@ -5,7 +5,10 @@ WORKDIR /usr/local/src
 
 # for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
 COPY get-r.sh .
-RUN ./get-r.sh pre
+RUN ./get-r.sh svn
+
+# CRAN/Ripley use a particular SVN version of R. Many R versions don't even compile with UBSAN and/or ASAN.
+RUN cd R-devel && svn up -r71700 && cd ..
 
 ARG JW_DOCKER_BUILD_DIR=.
 COPY ${JW_DOCKER_BUILD_DIR}/* ./
@@ -33,8 +36,4 @@ RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/local/lib/R/et
 ENV ASAN_OPTIONS 'detect_leaks=0:detect_odr_violation=0'
 
 # this docker image is focussed on testing icd, so install stuff now:
-RUN Rscript -e "install.packages(c('codetools', 'testthat', 'Rcpp',
-  'RColorBrewer', 'dichromat', 'munsell', 'checkmate', 'scales', 'proto',
-	'caTools', 'evaluate', 'knitr', 'xtable', 'rmarkdown', 'fastmatch', 'RODBC',
-	'roxygen2', 'xml2'),
-	INSTALL_opts = '--no-byte-compile')"
+RUN Rscript -e "install.packages(c('codetools', 'testthat', 'Rcpp', 'RColorBrewer', 'dichromat', 'munsell', 'checkmate', 'scales', 'proto', 'caTools', 'evaluate', 'knitr', 'xtable', 'rmarkdown', 'fastmatch', 'RODBC', 'roxygen2', 'xml2'), INSTALL_opts = '--no-byte-compile')"
