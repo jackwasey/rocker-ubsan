@@ -2,6 +2,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+set -x
+
+
 #########################################
 # Download a version of R in 3.x series #
 #########################################

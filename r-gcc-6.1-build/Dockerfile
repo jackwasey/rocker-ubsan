@@ -1,23 +1,23 @@
 FROM rocker/r-devel:latest
 
-RUN apt-get update -qq \
-    && apt-get install -t unstable -y --no-install-recommends \
-		automake \
-	        cmake \
-                curl \
-                dirmngr \
-	        fonts-inconsolata \
-	        git \
-                gnupg \
-	        libcurl4-openssl-dev \
-	        libssh2-1-dev \
-	        libssl-dev \
-	        libxml2-dev \
-	        pandoc \
-	        pandoc-citeproc \
-	        qpdf \
-	        texlive-base \
-     && apt-get clean
+RUN apt-get update -qq; exit 0
+RUN apt-get install -t unstable -y --no-install-recommends \
+			automake \
+			cmake \
+			curl \
+			dirmngr \
+			fonts-inconsolata \
+			git \
+			gnupg \
+			libcurl4-openssl-dev \
+			libssh2-1-dev \
+			libssl-dev \
+			libxml2-dev \
+			pandoc \
+			pandoc-citeproc \
+			qpdf \
+			texlive-base \
+		&& apt-get clean
 
 ENV GPG_KEYS \
 	B215C1633BCA0477615F1B35A5B3A004745C015A \
@@ -103,8 +103,8 @@ RUN cd R-devel \
 	LIBnn=lib \
 	AWK=/usr/bin/awk \
 	CC="gcc -std=gnu99 -fsanitize=address,undefined -fno-omit-frame-pointer" \
-	CXX="g++ -std=c++11 -fsanitize=address,undefined -fno-sanitize=object-size,vptr -fno-omit-frame-pointer" \
-	CXX1X="g++ -std=c++11 -fsanitize=address,undefined -fno-sanitize=object-size,vptr -fno-omit-frame-pointer" \
+	CXX="g++ -std=c++14 -fsanitize=address,undefined -fno-sanitize=object-size,vptr -fno-omit-frame-pointer" \
+	CXX1X="g++ -std=c++14 -fsanitize=address,undefined -fno-sanitize=object-size,vptr -fno-omit-frame-pointer" \
 	CFLAGS="-g -O0 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable" \
 	CXXFLAGS="-g -O0 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable" \
 	FC="gfortran" \
@@ -125,7 +125,7 @@ RUN cd R-devel \
         && cd /usr/local/src \
 	&& rm -rf R-devel
 
-ENV ASAN_OPTIONS 'detect_leaks=0:detect_odr_violation=0'
+ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0'
 
 ## Set Renviron to get libs from base R install
 RUN echo "R_LIBS=\${R_LIBS-'/usr/local/lib/R/site-library:/usr/local/lib/R/library:/usr/lib/R/library'}" >> /usr/local/lib/R/etc/Renviron

@@ -2,6 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+set -x
+
 JW_DOCKER_BUILD_DIR=${1:-}
 # drop trailing slash
 JW_DOCKER_BUILD_DIR=${JW_DOCKER_BUILD_DIR/%\//}
@@ -30,7 +32,7 @@ case "$JW_DOCKER_BUILD_DIR" in
     LLVM_REL_STR=RELEASE_37
     ;;
     *)
-    echo "unknown clang version requested via JW_DOCKER_BUILD_DIR"
+    echo "unknown clang version requested via JW_DOCKER_BUILD_DIR. Only matters if building LLVM/clang."
 esac
 
 if [ -n "$LLVM_REL_STR" ]; then

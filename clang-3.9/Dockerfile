@@ -1,8 +1,8 @@
 # don't acutally need r-devel for R, just all the dependencies.
 FROM rocker/r-devel:latest
 
-RUN apt-get update -qq \
-    && apt-get install -t unstable -y --no-install-recommends \
+RUN apt-get update -qq; exit 0
+RUN apt-get install -t unstable -y --no-install-recommends \
         automake \
         cmake \
         curl \
@@ -52,4 +52,3 @@ RUN mkdir llvm-build \
     && cd .. \
     && rm -rf llvm-build \
     && ldconfig
-

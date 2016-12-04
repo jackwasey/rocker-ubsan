@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 IFS=$'\n\t'
+# echo expanded commands as we go:
+set -x
 
 LIGHTBLUE='\033[34m'
 # RED='\033[31m'
@@ -10,8 +12,10 @@ OUT=$(mktemp /tmp/jw_docker_env_build.log.XXXXXXXXXX) || { echo "Failed to creat
 
 printf "writing to temp dir $LIGHTBLUE%s$NC\n" "$OUT"
 
+echo "Pulling parent docker repos"
+docker pull debian:testing >> "$OUT" # we rely on r-devel to be updated?
 docker pull rocker/r-devel >> "$OUT"
-docker pull debian:stretch >> "$OUT"
+docker pull debian:stretch >> "$OUT" # for gcc
 
 while read -r dir; do
     if [ ! -d "$dir" ]; then

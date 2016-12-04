@@ -1,11 +1,8 @@
-clang-3.7
-clang-3.8
 clang-3.9
 clang-trunk
 r-3.0
 r-3.1
 r-3.2
-r-clang-3.8
 r-clang-3.9
 r-clang-trunk
 r-debian-gcc-6
