@@ -83,7 +83,7 @@ RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/local/lib/R/et
 
 # R doesn't actually run at all without this (can be considered a test of whether the sanitizers were actually compiled in correctly!)
 # but rocker/r-devel-ubsan-clang does work without this
-ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0'
+# ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0'
 
 ## Create R-devel symlinks
 RUN cd /usr/local/bin \
