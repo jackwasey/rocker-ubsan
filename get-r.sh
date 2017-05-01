@@ -2,11 +2,13 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-set -x
-
+# show what we're doing
+# set -x
 
 #########################################
 # Download a version of R in 3.x series #
+# Accepts version string, svn, rel,  or #
+# pre as argument.                      #
 #########################################
 
 VER=${1:-svn}

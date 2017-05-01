@@ -1,4 +1,11 @@
-FROM jackwasey/clang-3.9
+# don't acutally need r-devel for R, just all the dependencies.
+FROM jackwasey/clang-4.0
+
+# before 4.0, R would build with LSAN, but 4.0+ needs pthreads which is not
+# allowed in docker build with default security profile. The horrific work-around
+# is to create a json security profile, and create a json dockerd configuration file
+# in /etc/docker/daemon.conf
+# without this, the build fails in configure when it tests for cross-compilation
 
 MAINTAINER "Jack Wasey" jack@jackwasey.com
 
@@ -56,7 +63,7 @@ RUN cd R-devel \
            CFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native" \
            CXXFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native" \
            MAIN_LD="clang++ -stdlib=libc++ -fsanitize=undefined,address" \
-           LDFLAGS="-L/usr/local/lib/clang/3.9.1/lib/linux -L/usr/local/lib -lc++abi" \
+           LDFLAGS="-L/usr/local/lib/clang/4.0.0/lib/linux -L/usr/local/lib -lc++abi" \
            ./configure --enable-R-shlib \
               --without-blas \
               --without-lapack \
@@ -80,12 +87,12 @@ ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0
 
 ## Create R-devel symlinks
 RUN cd /usr/local/bin \
-        && mv R Rdevelnew \
-        && mv Rscript Rscriptdevelnew \
+        && mv R Rdevel \
+        && mv Rscript Rscriptdevel \
         && mv RD RDold \
         && mv RDscript RDscriptold \
-        && ln -s Rdevelnew RD \
-        && ln -s Rscriptdevelnew RDscript
+        && ln -s Rdevel RD \
+        && ln -s Rscriptdevel RDscript
 
 # this docker image is focussed on testing icd, so install stuff now. use no-byte-compile for build speed
 RUN RDscript -e "install.packages(c('codetools', 'testthat', 'Rcpp', 'RColorBrewer', 'dichromat', 'munsell', 'checkmate', 'scales', 'proto', 'caTools', 'evaluate', 'knitr', 'xtable', 'rmarkdown', 'fastmatch', 'RODBC', 'roxygen2', 'xml2'), INSTALL_opts = '--no-byte-compile')"

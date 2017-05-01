@@ -22,6 +22,9 @@ case "$JW_DOCKER_BUILD_DIR" in
     clang-trunk)
     LLVM_REL_STR=RELEASE
     ;;
+    clang-4.0)
+    LLVM_REL_STR=RELEASE_40
+    ;;
     clang-3.9)
     LLVM_REL_STR=RELEASE_39
     ;;
