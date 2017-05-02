@@ -1,11 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 IFS=$'\n\t'
-# echo expanded commands as we go:
-set -x
+
+# echo expanded commands as we go for debugging
+# set -x
 
 LIGHTBLUE='\033[34m'
-# RED='\033[31m'
+RED='\033[31m'
 NC='\033[0m' # No Color
 
 OUT=$(mktemp /tmp/jw_docker_env_build.log.XXXXXXXXXX) || { echo "Failed to create temp file"; exit 1; }
@@ -24,8 +25,14 @@ while read -r dir; do
     fi
     dir_trimmed=$(echo "$dir" | sed 's:/*$::')
     printf "Building $LIGHTBLUE%s$NC\n" "$dir_trimmed" | tee -a "$OUT"
-    ./build.sh "$dir_trimmed" >> "$OUT"
+    set +e
+    bin/build.sh "$dir_trimmed" >> "$OUT"
+    rc=$?
+    set -e
+    if [[ $rc != 0 ]]; then
+      printf "${RED}Error building$NC $LIGHTBLUE%s$NC\n" "$dir_trimmed" | tee -a "$OUT"
+    fi
 done < active.txt
 
 # if everything went ok, then delete tmp
-rm -rf "$OUT"
+# rm -rf "$OUT"

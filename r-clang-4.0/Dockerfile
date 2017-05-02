@@ -13,14 +13,8 @@ WORKDIR /usr/local/src
 
 # for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
 COPY get-r.sh .
-# accepts svn, rel and pre
+# accepts svn, rel, pre or explicit version string, e.g. 3.3.2
 RUN ./get-r.sh rel
-
-ARG JW_DOCKER_BUILD_DIR=.
-COPY ${JW_DOCKER_BUILD_DIR}/* ./
-
-# put it all in this Dockerfile. each clang/gcc/R combo is different, so code re-use just causing problems
-#RUN mv config.site R-devel/config.site
 
 # must be used with --cap-add SYS_PTRACE so LSAN can attach to its monitor thread
 # https://github.com/google/sanitizers/issues/764
@@ -58,19 +52,20 @@ RUN cd R-devel \
            AWK=/usr/bin/awk \
            CC="clang -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -fno-omit-frame-pointer" \
            CXX="clang++ -fsanitize=address,undefined -fno-sanitize=float-divide-by-zero -stdlib=libc++ -fno-omit-frame-pointer -I/usr/local/include/c++/v1 -I/usr/local/include" \
-           FFLAGS="-g -O2 -mtune=native" \
-           FCFLAGS="-g -O2 -mtune=native" \
-           CFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native" \
-           CXXFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -mtune=native" \
-           MAIN_LD="clang++ -stdlib=libc++ -fsanitize=undefined,address" \
+           FFLAGS="-g -O2 -march=native" \
+           FCFLAGS="-g -O2 -march=native" \
+           CFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -march=native" \
+           CXXFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -march=native" \
+           MAIN_LD="clang++ -stdlib=libc++ -fsanitize=address,undefined" \
            LDFLAGS="-L/usr/local/lib/clang/4.0.0/lib/linux -L/usr/local/lib -lc++abi" \
-           ./configure --enable-R-shlib \
+           ./configure \
+              --enable-R-shlib \
               --without-blas \
               --without-lapack \
               --with-readline \
               --without-recommended-packages \
               --program-suffix=dev \
-              #--disable-openmp \
+              --disable-openmp \
         && make -j4 \
         && make install \
         && make clean
@@ -83,7 +78,9 @@ RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/local/lib/R/et
 
 # R doesn't actually run at all without this (can be considered a test of whether the sanitizers were actually compiled in correctly!)
 # but rocker/r-devel-ubsan-clang does work without this
-# ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0'
+# see: http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
+
+ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0'
 
 ## Create R-devel symlinks
 RUN cd /usr/local/bin \
