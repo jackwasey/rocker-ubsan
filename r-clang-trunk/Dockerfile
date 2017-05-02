@@ -4,7 +4,7 @@ FROM jackwasey/clang-trunk
 WORKDIR /usr/local/src
 
 # for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
-COPY get-r.sh .
+COPY bin/get-r.sh .
 RUN ./get-r.sh svn
 
 # CRAN/Ripley use a particular SVN version of R. Many R versions don't even compile with UBSAN and/or ASAN.
