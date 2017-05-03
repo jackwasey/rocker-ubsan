@@ -5,7 +5,7 @@ MAINTAINER "Jack Wasey" jack@jackwasey.com
 WORKDIR /usr/local/src
 
 # for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
-COPY get-r.sh .
+COPY bin/get-r.sh .
 # accepts svn, rel and pre
 RUN ./get-r.sh rel
 

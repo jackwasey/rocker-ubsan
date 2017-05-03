@@ -19,20 +19,15 @@ RUN apt-get install -t unstable -y --no-install-recommends \
 
 RUN awk '$1 ~ "^deb" { $3 = "experimental"; print; exit }' /etc/apt/sources.list > /etc/apt/sources.list.d/experimental.list
 
-RUN apt-get update && apt-get install -y -t experimental gcc gfortran && apt-get clean
+RUN apt-get update -qq && apt-get dist-upgrade -y && apt-get install -y -t experimental gcc gfortran && apt-get clean
 
 WORKDIR /usr/local/src
 
-# for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
-COPY get-r.sh .
+COPY bin/get-r.sh .
 RUN ./get-r.sh
 
-ARG JW_DOCKER_BUILD_DIR=.
-COPY ${JW_DOCKER_BUILD_DIR}/* ./
-RUN mv config.site R-devel/config.site
-
-RUN mkdir -p ~/.R
-RUN mv Makevars ~/.R
+#RUN mkdir -p ~/.R
+#RUN mv Makevars ~/.R
 
 # must disable openmp to enable ubsan when compiling R itself
 RUN cd R-devel \
