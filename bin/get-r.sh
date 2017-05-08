@@ -5,11 +5,7 @@ IFS=$'\n\t'
 # show what we're doing
 # set -x
 
-#########################################
-# Download a version of R in 3.x series #
-# Accepts version string, svn, rel,  or #
-# pre as argument.                      #
-#########################################
+# Accepts a dotted version string e.g. "3.3.2", "svn", "rel", or "pre"
 
 VER=${1:-svn}
 CRAN_URL=https://cloud.r-project.org
@@ -22,8 +18,6 @@ if [ -d "R-devel" ]; then
     echo "R-devel directory already exists, deleting it"
     rm -rf R-devel
 fi
-
-# example URL: https://cloud.r-project.org/src/base/R-3/R-3.0.0.tar.gz
 
 if [[ "$VER" = "svn" ]]; then
     ## Check out R-devel, but it doesn't always compile, whereas the tar balls probably do

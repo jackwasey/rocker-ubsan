@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # show what we're doing
-set -x
+# set -x
 
 # Get all the tarballs for an exact release, e.g. 4.0.0
 

@@ -19,7 +19,7 @@ docker pull rocker/r-devel >> "$OUT"
 docker pull debian:stretch >> "$OUT" # for gcc
 
 while read -r dir; do
-    if [ ! -d "$dir" ]; then
+    if [[ ! -d "$dir" ]]; then
         echo "$dir not found"
         exit 1
     fi
