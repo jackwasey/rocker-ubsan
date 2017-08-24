@@ -2,7 +2,7 @@ FROM rocker/r-devel:latest
 
 # adapted from https://github.com/docker-library/gcc
 
-RUN apt-get update -qq; exit 0
+RUN apt-get update -qq; apt-get -y -qq dist-upgrade; exit 0
 RUN apt-get install -t unstable -y --no-install-recommends \
 			automake \
 			cmake \
@@ -81,7 +81,7 @@ RUN set -x \
 WORKDIR /usr/local/src
 
 # for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
-COPY get-r.sh .
+COPY bin/get-r.sh .
 RUN ./get-r.sh
 
 ARG JW_DOCKER_BUILD_DIR=.

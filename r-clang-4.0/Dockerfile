@@ -1,5 +1,6 @@
-# don't acutally need r-devel for R, just all the dependencies.
 FROM jackwasey/clang-4.0
+MAINTAINER "Jack Wasey" jack@jackwasey.com
+WORKDIR /usr/local/src
 
 # before 4.0, R would build with LSAN, but 4.0+ needs pthreads which is not
 # allowed in docker build with default security profile. The horrific work-around
@@ -7,12 +8,8 @@ FROM jackwasey/clang-4.0
 # in /etc/docker/daemon.conf
 # without this, the build fails in configure when it tests for cross-compilation
 
-MAINTAINER "Jack Wasey" jack@jackwasey.com
-
-WORKDIR /usr/local/src
-
 # for COPY to work (without duplicating across a bunch of folders) the build context should be the parent directory
-COPY get-r.sh .
+COPY bin/get-r.sh .
 # accepts svn, rel, pre or explicit version string, e.g. 3.3.2
 RUN ./get-r.sh rel
 
@@ -39,6 +36,9 @@ RUN ./get-r.sh rel
 #R_OPENMP_CFLAGS=-fopenmp
 #R_LD_LIBRARY_PATH=/usr/local/lib
 
+# the CLANG-RT/ASAN library folder name changes with each release:
+RUN CLANGVER=$(clang --version | head -1 | awk '{print $3;}')
+
 RUN cd R-devel \
         && R_PAPERSIZE=letter \
            R_BATCHSAVE="--no-save --no-restore" \
@@ -57,7 +57,7 @@ RUN cd R-devel \
            CFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -march=native" \
            CXXFLAGS="-pipe -Wall -Wextra -pedantic -Wno-unused-parameter -g -O0 -march=native" \
            MAIN_LD="clang++ -stdlib=libc++ -fsanitize=address,undefined" \
-           LDFLAGS="-L/usr/local/lib/clang/4.0.0/lib/linux -L/usr/local/lib -lc++abi" \
+           LDFLAGS="-L/usr/local/lib/clang/$CLANGVER/lib/linux -L/usr/local/lib -lc++abi" \
            ./configure \
               --enable-R-shlib \
               --without-blas \
@@ -66,7 +66,7 @@ RUN cd R-devel \
               --without-recommended-packages \
               --program-suffix=dev \
               --disable-openmp \
-        && make -j4 \
+        && make -j8 \
         && make install \
         && make clean
 
@@ -79,7 +79,6 @@ RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/local/lib/R/et
 # R doesn't actually run at all without this (can be considered a test of whether the sanitizers were actually compiled in correctly!)
 # but rocker/r-devel-ubsan-clang does work without this
 # see: http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
-
 ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0'
 
 ## Create R-devel symlinks
@@ -90,6 +89,3 @@ RUN cd /usr/local/bin \
         && mv RDscript RDscriptold \
         && ln -s Rdevel RD \
         && ln -s Rscriptdevel RDscript
-
-# this docker image is focussed on testing icd, so install stuff now. use no-byte-compile for build speed
-RUN RDscript -e "install.packages(c('codetools', 'testthat', 'Rcpp', 'RColorBrewer', 'dichromat', 'munsell', 'checkmate', 'scales', 'proto', 'caTools', 'evaluate', 'knitr', 'xtable', 'rmarkdown', 'fastmatch', 'RODBC', 'roxygen2', 'xml2'), INSTALL_opts = '--no-byte-compile')"

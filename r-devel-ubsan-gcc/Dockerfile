@@ -22,7 +22,7 @@ RUN apt-get update -y && apt-get install -y -t unstable \
 
 WORKDIR /usr/local/src
 
-COPY get-r.sh .
+COPY bin/get-r.sh .
 RUN ./get-r.sh
 
 # GCC UBSAN and OpenMP don't work together in any version! appears to be no evidence of fix

@@ -1,8 +1,4 @@
 clang-trunk
 r-clang-trunk
-clang-3.9
-r-clang-3.9
-r-debian-gcc-6
 r-devel-ubsan-gcc
-r-gcc-6
-r-gcc-6.1-build
+r-gcc-7.1-build
