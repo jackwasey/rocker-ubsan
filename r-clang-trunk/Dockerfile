@@ -39,9 +39,9 @@ RUN cd R-devel \
               --without-recommended-packages \
               --program-suffix=dev \
               --disable-openmp \
-        && make -j8 \
-        && make install \
-        && make clean
+        && ASAN_OPTIONS=detect_leaks=0 make -j"$(nproc)" \
+        && ASAN_OPTIONS=detect_leaks=0 make install \
+        && ASAN_OPTIONS=detect_leaks=0 make clean
 
 ## Set Renviron to get libs from base R install
 RUN echo "R_LIBS=\${R_LIBS-'/usr/local/lib/R/site-library:/usr/local/lib/R/library:/usr/lib/R/library'}" >> /usr/local/lib/R/etc/Renviron
@@ -49,7 +49,7 @@ RUN echo "R_LIBS=\${R_LIBS-'/usr/local/lib/R/site-library:/usr/local/lib/R/libra
 ## Set default CRAN repo
 RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/local/lib/R/etc/Rprofile.site
 
-# R doesn't actually run at all without this (can be considered a test of whether the sanitizers were actually compiled in correctly!)
+# R doesn't actually run at all without this (can be considered a test of whether the sanitizers were actually compiled in correctly!). Is this still true?
 # but rocker/r-devel-ubsan-clang does work without this
 # see: http://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
 ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0'

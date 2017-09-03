@@ -19,7 +19,7 @@ RUN apt-get install -t unstable -y --no-install-recommends \
 
 WORKDIR /usr/local/src
 COPY bin/get-llvm* bin/
-RUN bin/get-llvm-rel.sh 4.0.0
+RUN bin/get-llvm-rel.sh 4.0.1
 
 RUN mkdir llvm-build \
   && cd llvm-build \

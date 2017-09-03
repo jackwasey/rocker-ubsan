@@ -62,7 +62,7 @@ RUN buildDeps='flex' \
 	&& cd .. \
 	&& rm -rf "$dir"
 
-RUN apt-get purge -y --auto-remove $buildDeps
+# RUN apt-get purge -y --auto-remove $buildDeps
 
 # gcc installs .so files in /usr/local/lib64...
 RUN echo '/usr/local/lib64' > /etc/ld.so.conf.d/local-lib64.conf \
@@ -120,9 +120,9 @@ RUN cd R-devel \
          --without-recommended-packages \
          --program-suffix=devsan \
          --disable-openmp \
-	&& make -j"$(nproc)" \
-	&& make install \
-	&& make clean \
+	&& ASAN_OPTIONS=detect_leaks=0 make -j"$(nproc)" \
+	&& ASAN_OPTIONS=detect_leaks=0 make install \
+	&& ASAN_OPTIONS=detect_leaks=0 make clean \
 	&& rm -rf /usr/local/src/R-devel
 
 ENV ASAN_OPTIONS 'alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0'
