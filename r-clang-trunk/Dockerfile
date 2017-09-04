@@ -48,6 +48,7 @@ RUN echo "R_LIBS=\${R_LIBS-'/usr/local/lib/R/site-library:/usr/local/lib/R/libra
 
 ## Set default CRAN repo
 RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/local/lib/R/etc/Rprofile.site
+RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/lib/R/etc/Rprofile.site
 
 # R doesn't actually run at all without this (can be considered a test of whether the sanitizers were actually compiled in correctly!). Is this still true?
 # but rocker/r-devel-ubsan-clang does work without this

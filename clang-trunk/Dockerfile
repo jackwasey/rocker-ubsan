@@ -29,7 +29,7 @@ RUN mkdir llvm-build \
   -DCMAKE_INSTALL_PREFIX=/usr/local \
   -DCLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
   ../llvm \
-    && make -j6 \
+    && make -j$(nproc) \
     && make install \
     && make clean \
     && cd .. \

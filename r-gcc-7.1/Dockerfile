@@ -132,6 +132,7 @@ RUN echo "R_LIBS=\${R_LIBS-'/usr/local/lib/R/site-library:/usr/local/lib/R/libra
 
 ## Set default CRAN repo
 RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/local/lib/R/etc/Rprofile.site
+RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/lib/R/etc/Rprofile.site
 
 # RUN mkdir ~/.R
 # RUN echo "CXX=g++ \n\
@@ -139,3 +140,12 @@ RUN echo 'options("repos"="https://cloud.r-project.org")' >> /usr/local/lib/R/et
 # CFLAGS+=-O0 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable \n\
 # CXXFLAGS+=-O0 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable" > /root/.R/Makevars
 # alternatively use `R RHOME`/etc/Makevars.site
+
+RUN cd /usr/local/bin \
+        && mv R Rdevel \
+        && mv Rscript Rscriptdevel \
+        && mv RD RDold \
+        && mv RDscript RDscriptold \
+        && ln -s Rdevel RD \
+        && ln -s Rscriptdevel RDscript
+

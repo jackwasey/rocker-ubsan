@@ -19,7 +19,7 @@ RUN apt-get install -t unstable -y --no-install-recommends \
 
 WORKDIR /usr/local/src
 COPY bin/get-llvm* bin/
-RUN bin/get-llvm-rel.sh 4.0.1
+RUN bin/get-llvm-rel.sh 5.0.0
 
 RUN mkdir llvm-build \
   && cd llvm-build \
@@ -29,7 +29,7 @@ RUN mkdir llvm-build \
   -DCMAKE_INSTALL_PREFIX=/usr/local \
   -DCLANG_DEFAULT_OPENMP_RUNTIME:STRING=libomp \
   ../llvm \
-    && make -j$(nproc) \
+    && make -j6 \
     && make install \
     && make clean \
     && cd .. \
