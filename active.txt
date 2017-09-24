@@ -1,4 +1,7 @@
 clang-trunk
+clang-4.0
+r-clang-4.0
+r-clang-4.0-icd
 r-clang-trunk
-r-devel-ubsan-gcc
 r-gcc-7.1-build
+r-gcc-7.1-build-icd

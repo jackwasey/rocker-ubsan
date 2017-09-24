@@ -1,4 +1,4 @@
-FROM jackwasey/r-clang-4.0
+FROM jackwasey/r-gcc-7.1
 
 # this docker image is focussed on testing icd, so install stuff now. use no-byte-compile for build speed
 
