@@ -45,7 +45,7 @@ RUN set -ex; \
 	done
 
 # Last Modified: 2017-08-14
-ENV GCC_VERSION 7.2.0
+ENV GCC_VERSION 7.3.0
 # Docker EOL: 2018-08-14
 
 RUN set -ex; \
@@ -170,8 +170,8 @@ RUN cd R-devel \
 	CC="gcc -std=gnu99 -fsanitize=address,undefined -fno-omit-frame-pointer" \
 	CXX="g++ -fsanitize=address,undefined,bounds-strict -fno-sanitize=object-size,vptr -fno-omit-frame-pointer" \
 	CXX11="g++ -fsanitize=address,undefined,bounds-strict -fno-sanitize=object-size,vptr -fno-omit-frame-pointer" \
-	CFLAGS="-pipe -g -O2 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable" \
-	CXXFLAGS="-pipe -g -O2 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable" \
+	CFLAGS="-pipe -g -O2 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable -no-pie" \
+	CXXFLAGS="-pipe -g -O2 -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-unused-variable -no-pie" \
 	FC="gfortran" \
 	F77="gfortran" \
 	FFLAGS="-pipe -O2 -march=native" \
