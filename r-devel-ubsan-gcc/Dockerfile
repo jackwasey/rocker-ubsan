@@ -1,37 +1,39 @@
-# Based heavily on rocker/r-devel-san and friends from Dirk Eddelbuettel. Uses the GCC in whichever version of debian this image inherits from r-devel.
+# Based heavily on rocker/r-devel-san and friends from Dirk Eddelbuettel.
+# Uses the GCC in whichever version of debian this image inherits from r-devel.
+# At the moment, this is debian:testing
 
 FROM rocker/r-devel:latest
 
 # use unstable to get the right development library versions
 RUN apt-get update -y && apt-get install -y -t unstable \
-	  curl \
-	  fonts-inconsolata \
-	  git \
-	  libcurl4-openssl-dev \
-	  libssl-dev/unstable \
-	  libxml2-dev/unstable \
-	  libssh2-1-dev \
-	  pandoc \
-	  pandoc-citeproc \
-	  qpdf \
-	  texlive-base \
-	  unixodbc-dev \
-     && apt-get clean
+      curl \
+      fonts-inconsolata \
+      git \
+      libcurl4-openssl-dev \
+      libssl-dev/unstable \
+      libxml2-dev/unstable \
+      libssh2-1-dev \
+      pandoc \
+      pandoc-citeproc \
+      qpdf \
+      texlive-base \
+      unixodbc-dev \
+    && apt-get clean
 
 WORKDIR /usr/local/src
 
-COPY get-r.sh .
+COPY bin/get-r.sh .
 RUN ./get-r.sh
 
 # GCC UBSAN and OpenMP don't work together in any version! appears to be no evidence of fix
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=64888
 
-ENV ASAN_OPTIONS detect_leaks=0:detect_odr_violation=0
+ENV ASAN_OPTIONS alloc_dealloc_mismatch=0:detect_leaks=0:detect_odr_violation=0
 
 # no config.site at present
 
 RUN cd R-devel \
-	&& R_PAPERSIZE=letter \
+  && R_PAPERSIZE=letter \
            R_BATCHSAVE="--no-save --no-restore" \
            R_BROWSER=xdg-open \
            PAGER=/usr/bin/pager \
@@ -48,16 +50,16 @@ RUN cd R-devel \
            CXX1X="g++ -fsanitize=address,undefined  -fno-omit-frame-pointer -fno-sanitize=object-size,vptr" \
            FC="gfortran -fsanitize=address" \
            F77="gfortran -fsanitize=address" \
-	   FCFLAGS="-g -O0 -mtune=native" \
-	   FFLAGS="-g -O0 -mtune=native" \
-	   MAIN_LDFLAGS="-fsanitize=address,undefined" \
-           ./configure --enable-R-shlib \
-               --without-blas \
-               --without-lapack \
-	       --disable-openmp \
-               --with-readline \
-               --without-recommended-packages \
-               --program-suffix=dev \
+     FCFLAGS="-g -O0 -mtune=native" \
+     FFLAGS="-g -O0 -mtune=native" \
+     MAIN_LDFLAGS="-fsanitize=address,undefined" \
+        ./configure --enable-R-shlib \
+          --without-blas \
+          --without-lapack \
+          --disable-openmp \
+          --with-readline \
+          --without-recommended-packages \
+          --program-suffix=dev \
         && make -j8 \
         && make install \
         && make clean \
@@ -71,4 +73,3 @@ ARG JW_DOCKER_BUILD_DIR=.
 
 ENV LD_PRELOAD /usr/lib/x86_64-linux-gnu/libasan.so.2
 CMD ["Rdevel"]
-
