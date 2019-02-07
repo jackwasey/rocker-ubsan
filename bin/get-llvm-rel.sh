@@ -2,12 +2,11 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-
 set -x
 
 # Get all the tarballs for an exact release, e.g. 4.0.0
 
-VER=${1:-4.0.1}
+VER=${1:-8.0.0}
 LLVM_URL=http://releases.llvm.org
 
 for module in llvm cfe compiler-rt clang-tools-extra libcxx libcxxabi openmp; do

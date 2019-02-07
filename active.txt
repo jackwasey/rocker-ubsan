@@ -1,7 +1,4 @@
 clang-trunk
 r-clang-trunk
-clang-5.0
-r-clang-5.0
-r-gcc-7
-r-gcc-7.1-icd
+r-gcc-8
 r-gcc-experimental

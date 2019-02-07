@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # echo expanded commands as we go for debugging
-# set -x
+set -x
 
 LIGHTBLUE='\033[34m'
 RED='\033[31m'
